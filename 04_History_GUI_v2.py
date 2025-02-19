@@ -14,6 +14,9 @@ class Converter:
 
         self.all_calculations_list = ['10.0°F is -12°C', '20.0°F is -7°C', '30.0°F is -1°C', '40.0°F is 4°C', '50.0°F is 10°C', '60.0°F is 16°C']
 
+        self.all_calculations_list = ['20.0°F is -7°C', '30.0°F is -1°C', '40.0°F is 4°C', '50.0°F is 10°C', '60.0°F is 16°C']
+
+
         self.temp_frame = Frame(padx=10, pady=10)
         self.temp_frame.grid()
 
@@ -37,13 +40,6 @@ class DisplayHistory:
     Displays history log box
     """
     def __init__(self, partner, calculations):
-        # Setup dialogue boxes
-        history_text = ("Below are your recent calculations - showing "
-                        "3 / 3 calculations. All calculations are "
-                        "shown to the nearest degree.")
-        export_text = ("Please push <Export> to save your calculations in "
-                       "file. If the filename already exists it will be ")
-        
         # Background colour and text for calculation area
         if len(calculations) <= c.MAX_CALCS:
             calc_bg = "#d5e8d4"
@@ -52,6 +48,28 @@ class DisplayHistory:
             calc_bg = "#ffe6cc"
             calc_amount = ("your recent calculations - "
                           f"showing {c.MAX_CALCS} / {len(calculations)}")
+
+        # Create string from calculations list (newest calculations first)
+        newest_first_string = ""
+        newest_first_list = list(reversed(calculations))
+
+        # Last item added in outside the for loop to there is not a empty space at the end
+        if len(newest_first_list) <= c.MAX_CALCS:
+            for item in newest_first_list[:-1]:
+                newest_first_string += item + "\n"
+            newest_first_string += newest_first_list[-1]
+        
+        # Same as before but if we have more than 5 items
+        else:
+            for item in newest_first_list[:c.MAX_CALCS-1]:
+                newest_first_string += item + "\n"
+            newest_first_string += newest_first_list[c.MAX_CALCS-1]
+
+        # Setup dialogue boxes
+        history_text = (f"Below are {calc_amount} calculations (to the nearest degree).")
+        export_text = ("Please push <Export> to save your calculations in "
+                       "file. If the filename already exists it will be ")
+        
 
         # Makes new window seperate to main converter window
         self.history_box = Toplevel()
@@ -70,7 +88,7 @@ class DisplayHistory:
         label_details_list = [
             ["History / Export", ("Arial", "16", "bold"), None],
             [history_text, ("Arial", "11"), None],
-            ["Calculation List", ("Arial", "14"), calc_bg],
+            [newest_first_string, ("Arial", "14"), calc_bg],
             [export_text, ("Arial", "11"), None]
         ]
 
